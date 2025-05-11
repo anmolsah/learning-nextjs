@@ -26,19 +26,34 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 import React from "react";
 
 const CreateSnippetPage = () => {
+  async function createSnippet(formData: FormData) {
+    "use server";
+    const title = formData.get("title") as string;
+    const code = formData.get("code") as string;
 
-    
+    const snippet = await prisma.snippet.create({
+      data: {
+        title,
+        code,
+      },
+    });
+
+    console.log("Snippet created:", snippet);
+    redirect("/results");
+  }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-white flex items-center justify-center">
       <div className="w-full max-w-3xl p-8 shadow-xl rounded-xl bg-white border border-gray-200">
         <h1 className="text-3xl font-bold mb-8 text-gray-800 text-center">
           Create New Snippet
         </h1>
-        <form className="space-y-6">
+        <form action={createSnippet} className="space-y-6">
           <div className="space-y-2">
             <Label
               htmlFor="title"
